@@ -1,0 +1,17 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: {{.Values.user}}-vcluster
+  namespace: istio-system
+spec:
+  selector:
+    istio: ingressgateway # use the default IngressGateway
+  servers:
+    - port:
+        number: 443
+        name: tls-passthrough
+        protocol: TLS
+      hosts:
+        - "cluster-{{.Values.user}}.{{.Values.ingress}}"
+      tls:
+        mode: PASSTHROUGH

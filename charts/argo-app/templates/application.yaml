@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ .Values.name }}
+  namespace: {{ .Values.namespace }}
+spec:
+  destination:
+    namespace: argocd
+    server: {{ .Values.cluster | default "in-cluster" }}
+  project: {{ .Values.project | default "default" }}
+  source:
+    path: {{ .Values.path }}
+    repoURL: {{ .Values.repoURL }}
+    targetRevision: HEAD
+    directory:
+      include: '{*.yaml,*.yml}'
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      allowEmpty: true

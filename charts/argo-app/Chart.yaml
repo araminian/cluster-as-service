@@ -1,0 +1,4 @@
+apiVersion: v2
+name: argo-app
+type: application
+version: 0.1.0
