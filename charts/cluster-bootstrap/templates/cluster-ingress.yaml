@@ -2,19 +2,19 @@ apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
   name: vcluster-ingress
-  namespace: {{.Values.user}}
+  namespace: {{ .Values.user }}
 spec:
   gateways:
-    - istio-system/{{.Values.user}}-vcluster
+    - {{ printf "istio-system/%s-vcluster" .Values.user }}
   hosts:
-    - "cluster-{{.Values.user}}.{{.Values.ingress}}"
+    - {{ printf "cluster-%s.%s" .Values.user .Values.ingress | quote }}
   tls:
     - match:
         - port: 443
           sniHosts:
-            - "cluster-{{.Values.user}}.{{.Values.ingress}}"
+            - {{ printf "cluster-%s.%s" .Values.user .Values.ingress | quote }}
       route:
         - destination:
-            host: {{.Values.user}}
+            host: {{ .Values.user }}
             port:
               number: 443

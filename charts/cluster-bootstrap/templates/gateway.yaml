@@ -1,7 +1,7 @@
 apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
 metadata:
-  name: {{.Values.user}}-vcluster
+  name: {{ .Values.user }}-vcluster
   namespace: istio-system
 spec:
   selector:
@@ -12,6 +12,6 @@ spec:
         name: tls-passthrough
         protocol: TLS
       hosts:
-        - "cluster-{{.Values.user}}.{{.Values.ingress}}"
+        - {{ printf "cluster-%s.%s" .Values.user .Values.ingress | quote }}
       tls:
         mode: PASSTHROUGH
