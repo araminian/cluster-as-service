@@ -1,0 +1,13 @@
+apiVersion: skaffold/v3
+metadata:
+  name: bootstrap
+kind: Config
+manifests:
+  helm:
+    releases:
+      - name: '{{.GIT_USER}}'
+        chartPath: ../charts/cluster-bootstrap
+        namespace: '{{.GIT_USER}}'
+        setValueTemplates:
+          user: '{{.GIT_USER}}'
+          ingress: '{{.INGRESS}}'
