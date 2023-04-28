@@ -63,3 +63,15 @@ destroy:
   echo "Destroying cluster for user: '$GIT_USER'..."
   rm -rf "$USER_CLUSTER_DIR"
   rm -rf "argo-apps/${GIT_USER}-vcluster.yaml"
+
+kubeconfig:
+  #!/usr/bin/env bash
+  set -eu pipefail
+  if kubectl get namespace $GIT_USER > /dev/null 2>&1; then
+    echo "Vcluster '$GIT_USER' exists"
+    vcluster connect $GIT_USER -n $GIT_USER --update-current=false --server=https://cluster-${GIT_USER}.${INGRESS} --kube-config ./kubeconfig-${GIT_USER}.yaml
+  else
+    echo "Vcluster '$GIT_USER' does not exist"
+    exit 1
+  fi
+ 
