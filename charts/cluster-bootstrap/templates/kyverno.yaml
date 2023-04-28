@@ -1,0 +1,68 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: vcluster-argocd-{{ .Values.user }}
+  namespace: kyverno
+  annotations:
+    argocd.argoproj.io/sync-wave: "10"
+spec:
+  generateExistingOnPolicyUpdate: true
+  rules:
+    - name: argocd
+      match:
+        all:
+          - resources:
+              kinds:
+                - Secret
+              names:
+                - vc-{{ .Values.user }}
+              namespaces:
+                - {{ .Values.user }}
+      context:
+        - name: vcsecrets
+          apiCall:
+            urlPath: /api/v1/namespaces/{{request.object.metadata.namespace}}/secrets/{{request.object.metadata.name}}
+            jmesPath: "data"
+        - name: ca
+          variable:
+            value: '{{vcsecrets."certificate-authority"}}'
+        - name: clientcert
+          variable:
+            value: '{{vcsecrets."client-certificate"}}'
+        - name: clientkey
+          variable:
+            value: '{{vcsecrets."client-key"}}'
+        - name: config
+          variable:
+            value: '{{vcsecrets."config"}}'
+        - name: argoconfig
+          variable:
+            jmesPath: 'to_string(@) | base64_encode(@)'
+            value:
+              tlsClientConfig:
+                insecure: false
+                certData: '{{clientcert}}'
+                keyData: '{{clientkey}}'
+                caData: '{{ca}}'
+        - name: argoclustername
+          variable:
+            jmesPath: 'to_string(@)'
+            value: '{{request.object.metadata.namespace}}'
+        - name: argoclusterurl
+          variable:
+            jmesPath: 'to_string(@)'
+            value: {{ printf "https://cluster-%s.%s" .Values.user .Values.ingress | quote }}
+      generate:
+        kind: Secret
+        name: "{{request.object.metadata.namespace}}-cluster"
+        apiVersion: v1
+        namespace: argocd
+        synchronize: true
+        data:
+          metadata:
+            labels:
+              argocd.argoproj.io/secret-type: cluster
+          data:
+            config: "{{argoconfig}}"
+            name: "{{argoclustername | base64_encode(@)}}"
+            server: "{{argoclusterurl | base64_encode(@)}}"
