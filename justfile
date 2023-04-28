@@ -26,7 +26,7 @@ apply:
   fi
   echo "Creating a new cluster for user: '$GIT_USER'..."
   
-  BRANCH_NAME="vcluster-${GIT_USER}-$(echo $RANDOM | md5sum | head -c 10; echo;)"
+  BRANCH_NAME="create-vcluster-${GIT_USER}-$(echo $RANDOM | md5sum | head -c 10; echo;)"
 
   echo "Create a new branch: '$BRANCH_NAME'..."
   git checkout -b "$BRANCH_NAME"
