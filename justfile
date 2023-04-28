@@ -24,6 +24,11 @@ apply:
   fi
   echo "Creating a new cluster for user: '$GIT_USER'..."
   
+  BRANCH_NAME="vcluster-${GIT_USER}-$(echo $RANDOM | md5sum | head -c 10; echo;)"
+
+  echo "Create a new branch: '$BRANCH_NAME'..."
+  git checkout -b "$BRANCH_NAME"
+
   mkdir -p "$USER_CLUSTER_DIR" && touch $USER_CLUSTER_DIR/.gitkeep
   
   mkdir -p "$USER_CLUSTER_DIR/vcluster"
@@ -34,6 +39,10 @@ apply:
 
   just argoapp "${GIT_USER}-vcluster" "$REPO_URL" "$USER_CLUSTER_DIR" "in-cluster" "default" "argo-apps/${GIT_USER}-vcluster.yaml"
 
+  echo "Committing changes..."
+  git add .
+  git commit -m "Add cluster for user: '$GIT_USER'"
+  git push --set-upstream origin "$BRANCH_NAME"
 
 argoapp ARGO_APP_NAME REPO_URL REPO_PATH CLUSTER_NAME ARGO_PROJECT_NAME OUTPUT:
   #!/usr/bin/env bash
