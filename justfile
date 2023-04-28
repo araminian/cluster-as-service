@@ -54,6 +54,9 @@ argoapp ARGO_APP_NAME REPO_URL REPO_PATH CLUSTER_NAME ARGO_PROJECT_NAME OUTPUT:
 destroy:
   #!/usr/bin/env bash
   set -eu pipefail
+  
+  git checkout main && git pull
+
   USER_CLUSTER_DIR="${CLUSTERS_DIR}/${GIT_USER}"
   if [ ! -d "$USER_CLUSTER_DIR" ]; then
     echo "The user '$GIT_USER' cluster directory does not exist."
@@ -61,8 +64,19 @@ destroy:
     exit 1
   fi
   echo "Destroying cluster for user: '$GIT_USER'..."
+
+  BRANCH_NAME="vcluster-${GIT_USER}-$(echo $RANDOM | md5sum | head -c 10; echo;)"
+
+  echo "Create a new branch: '$BRANCH_NAME'..."
+  git checkout -b "$BRANCH_NAME"
+  
   rm -rf "$USER_CLUSTER_DIR"
   rm -rf "argo-apps/${GIT_USER}-vcluster.yaml"
+  echo "Committing changes..."
+  git add .
+  git commit -m "Delete cluster for user: '$GIT_USER'"
+  git push --set-upstream origin "$BRANCH_NAME"
+
 
 kubeconfig:
   #!/usr/bin/env bash
