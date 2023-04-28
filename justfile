@@ -45,6 +45,10 @@ apply:
   git add .
   git commit -m "Add cluster for user: '$GIT_USER'"
   git push --set-upstream origin "$BRANCH_NAME"
+  echo "Please create a PR to merge '$BRANCH_NAME' into 'main' branch."
+  echo "After merging the PR, the cluster will be created."
+  echo "Back to main branch..."
+  git checkout main
 
 argoapp ARGO_APP_NAME REPO_URL REPO_PATH CLUSTER_NAME ARGO_PROJECT_NAME OUTPUT:
   #!/usr/bin/env bash
@@ -76,6 +80,10 @@ destroy:
   git add .
   git commit -m "Delete cluster for user: '$GIT_USER'"
   git push --set-upstream origin "$BRANCH_NAME"
+  echo "Please create a PR to merge '$BRANCH_NAME' into 'main' branch."
+  echo "After merging the PR, the cluster will be destroyed."
+  echo "Back to main branch..."
+  git checkout main
 
 
 kubeconfig:
