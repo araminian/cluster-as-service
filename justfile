@@ -3,7 +3,7 @@ set export
 set positional-arguments
 
 #DIRS
-BOOTSTRAP_DIR := "bootstrap"
+SKAFFOLDS_DIR := "skaffolds"
 CLUSTERS_DIR := "clusters"
 
 #VARS
@@ -22,4 +22,9 @@ apply:
   echo "Creating a new cluster for user: '$GIT_USER'..."
   mkdir -p "$USER_CLUSTER_DIR" && touch $USER_CLUSTER_DIR/.gitkeep
   
-  skaffold render -f "$BOOTSTRAP_DIR/skaffold.yaml" -o "$USER_CLUSTER_DIR/cluster.yaml"
+  skaffold render -f "$SKAFFOLDS_DIR/vcluster.yaml" -o "$USER_CLUSTER_DIR/cluster.yaml"
+
+argoapp ARGO_APP_NAME REPO_URL REPO_PATH CLUSTER_NAME PROJECT_NAME OUTPUT:
+  #!/usr/bin/env bash
+  echo $NAME
+  skaffold render -f "$SKAFFOLDS_DIR/argoapp.yaml" -o "$OUTPUT"

@@ -2,10 +2,10 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: {{ .Values.name }}
-  namespace: {{ .Values.namespace }}
+  namespace: argocd
 spec:
   destination:
-    namespace: argocd
+    namespace: {{ .Values.namespace }}
     server: {{ .Values.cluster | default "in-cluster" }}
   project: {{ .Values.project | default "default" }}
   source:

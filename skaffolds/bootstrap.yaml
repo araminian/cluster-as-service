@@ -6,7 +6,7 @@ manifests:
   helm:
     releases:
       - name: '{{.GIT_USER}}'
-        chartPath: ../charts/cluster-bootstrap
+        chartPath: charts/cluster-bootstrap
         namespace: '{{.GIT_USER}}'
         setValueTemplates:
           user: '{{.GIT_USER}}'

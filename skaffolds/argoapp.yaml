@@ -1,0 +1,17 @@
+apiVersion: skaffold/v3
+metadata:
+  name: argoapp
+kind: Config
+manifests:
+  helm:
+    releases:
+      - name: 'argoapp'
+        chartPath: charts/argo-app
+        namespace: '{{.GIT_USER}}'
+        setValueTemplates:
+          name: '{{.ARGO_APP_NAME}}'
+          namespace: '{{.GIT_USER}}'
+          cluster: '{{.CLUSTER_NAME}}'
+          project: '{{.PROJECT_NAME}}'
+          repoURL: '{{.REPO_URL}}'
+          path: '{{.REPO_PATH}}'
