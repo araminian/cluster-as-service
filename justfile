@@ -26,7 +26,7 @@ apply:
   fi
   echo "Creating a new cluster for user: '$GIT_USER'..."
   
-  BRANCH_NAME="vcluster-${GIT_USER}-$(echo $RANDOM | md5sum | head -c 10; echo;)"
+  BRANCH_NAME="add-vcluster-${GIT_USER}-$(echo $RANDOM | md5sum | head -c 10; echo;)"
 
   echo "Create a new branch: '$BRANCH_NAME'..."
   git checkout -b "$BRANCH_NAME"
@@ -65,11 +65,11 @@ destroy:
   fi
   echo "Destroying cluster for user: '$GIT_USER'..."
 
-  BRANCH_NAME="vcluster-${GIT_USER}-$(echo $RANDOM | md5sum | head -c 10; echo;)"
+  BRANCH_NAME="delete-vcluster-${GIT_USER}-$(echo $RANDOM | md5sum | head -c 10; echo;)"
 
   echo "Create a new branch: '$BRANCH_NAME'..."
   git checkout -b "$BRANCH_NAME"
-  
+
   rm -rf "$USER_CLUSTER_DIR"
   rm -rf "argo-apps/${GIT_USER}-vcluster.yaml"
   echo "Committing changes..."
