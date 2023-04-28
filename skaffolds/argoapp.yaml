@@ -12,6 +12,6 @@ manifests:
           name: '{{.ARGO_APP_NAME}}'
           namespace: '{{.GIT_USER}}'
           cluster: '{{.CLUSTER_NAME}}'
-          project: '{{.PROJECT_NAME}}'
+          project: '{{.ARGO_PROJECT_NAME}}'
           repoURL: '{{.REPO_URL}}'
           path: '{{.REPO_PATH}}'
