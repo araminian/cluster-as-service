@@ -17,6 +17,8 @@ apply:
   set -eu pipefail
   USER_CLUSTER_DIR="${CLUSTERS_DIR}/${GIT_USER}"
 
+  git checkout main && git pull
+  
   if [ -d "$USER_CLUSTER_DIR" ]; then
     echo "The user '$GIT_USER' cluster directory exists."
     echo "Can't create a new cluster!"
