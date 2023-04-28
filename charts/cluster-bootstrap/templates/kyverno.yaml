@@ -21,40 +21,40 @@ spec:
       context:
         - name: vcsecrets
           apiCall:
-            urlPath: /api/v1/namespaces/{{request.object.metadata.namespace}}/secrets/{{request.object.metadata.name}}
+            urlPath: /api/v1/namespaces/{{`{{request.object.metadata.namespace}}`}}/secrets/{{`{{request.object.metadata.name}}`}}
             jmesPath: "data"
         - name: ca
           variable:
-            value: '{{vcsecrets."certificate-authority"}}'
+            value: '{{`{{vcsecrets."certificate-authority"}}`}}'
         - name: clientcert
           variable:
-            value: '{{vcsecrets."client-certificate"}}'
+            value: '{{`{{vcsecrets."client-certificate"}}`}}'
         - name: clientkey
           variable:
-            value: '{{vcsecrets."client-key"}}'
+            value: '{{`{{vcsecrets."client-key"}}`}}'
         - name: config
           variable:
-            value: '{{vcsecrets."config"}}'
+            value: '{{`{{vcsecrets."config"}}`}}'
         - name: argoconfig
           variable:
             jmesPath: 'to_string(@) | base64_encode(@)'
             value:
               tlsClientConfig:
                 insecure: false
-                certData: '{{clientcert}}'
-                keyData: '{{clientkey}}'
-                caData: '{{ca}}'
+                certData: '{{`{{clientcert}}`}}'
+                keyData: '{{`{{clientkey}}`}}'
+                caData: '{{`{{ca}}`}}'
         - name: argoclustername
           variable:
             jmesPath: 'to_string(@)'
-            value: '{{request.object.metadata.namespace}}'
+            value: '{{`{{request.object.metadata.namespace}}`}}'
         - name: argoclusterurl
           variable:
             jmesPath: 'to_string(@)'
             value: {{ printf "https://cluster-%s.%s" .Values.user .Values.ingress | quote }}
       generate:
         kind: Secret
-        name: "{{request.object.metadata.namespace}}-cluster"
+        name: "{{`{{request.object.metadata.namespace}}`}}-cluster"
         apiVersion: v1
         namespace: argocd
         synchronize: true
@@ -63,6 +63,6 @@ spec:
             labels:
               argocd.argoproj.io/secret-type: cluster
           data:
-            config: "{{argoconfig}}"
-            name: "{{argoclustername | base64_encode(@)}}"
-            server: "{{argoclusterurl | base64_encode(@)}}"
+            config: "{{`{{argoconfig}}`}}"
+            name: "{{`{{argoclustername | base64_encode(@)}}`}}"
+            server: "{{`{{argoclusterurl | base64_encode(@)}}`}}"
