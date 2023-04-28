@@ -6,7 +6,7 @@ metadata:
 spec:
   destination:
     namespace: {{ .Values.namespace }}
-    server: {{ .Values.cluster | default "in-cluster" }}
+    name: {{ .Values.cluster | default "in-cluster" }}
   project: {{ .Values.project | default "default" }}
   source:
     path: {{ .Values.path }}
