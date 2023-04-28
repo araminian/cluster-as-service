@@ -14,6 +14,7 @@ spec:
     targetRevision: HEAD
     directory:
       include: '{*.yaml,*.yml}'
+      recurse: true
   syncPolicy:
     automated:
       prune: true
