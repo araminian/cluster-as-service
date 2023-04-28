@@ -1,0 +1,24 @@
+---
+# Source: argo-app/templates/application.yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: araminian-vcluster
+  namespace: argocd
+spec:
+  destination:
+    namespace: araminian
+    server: in-cluster
+  project: default
+  source:
+    path: clusters/araminian
+    repoURL: https://github.com/araminian/cluster-as-service.git
+    targetRevision: HEAD
+    directory:
+      include: '{*.yaml,*.yml}'
+      recurse: true
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      allowEmpty: true
