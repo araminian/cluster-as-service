@@ -1,0 +1,16 @@
+apiVersion: install.istio.io/v1alpha1
+kind: IstioOperator
+metadata:
+  namespace: istio-system
+  name: istiod
+  annotations:
+    argocd.argoproj.io/sync-wave: "10"
+spec:
+  profile: default
+  componenet:
+    ingressGateways:
+      - name: istio-ingressgateway
+        enabled: true
+        k8s:
+          service:
+            type: ClusterIP

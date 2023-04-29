@@ -1,0 +1,16 @@
+apiVersion: skaffold/v3
+metadata:
+  name: istio-operator
+kind: Config
+manifests:
+  helm:
+    releases:
+      - name: 'istio-operator'
+        remoteChart: istio-operator
+        repo: https://wiremind.github.io/wiremind-helm-charts
+        createNamespace: true
+        namespace: 'istio-operator'
+      - name: 'istiod'
+        chartPath: charts/istiod
+        namespace: 'istio-system'
+        createNamespace: true
