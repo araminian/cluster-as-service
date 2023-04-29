@@ -33,20 +33,30 @@ apply:
 
   mkdir -p "$USER_CLUSTER_DIR" && touch $USER_CLUSTER_DIR/.gitkeep
   
-  mkdir -p "$USER_CLUSTER_DIR/vcluster"
-  skaffold render --namespace $GIT_USER -f "$SKAFFOLDS_DIR/vcluster.yaml" -o "$USER_CLUSTER_DIR/vcluster/cluster.yaml"
+  mkdir -p "$USER_CLUSTER_DIR/cluster/vcluster"
+  skaffold render --namespace $GIT_USER -f "$SKAFFOLDS_DIR/vcluster.yaml" -o "$USER_CLUSTER_DIR/cluster/vcluster/cluster.yaml"
   
-  mkdir -p "$USER_CLUSTER_DIR/bootstrap"
-  skaffold render --namespace $GIT_USER -f "$SKAFFOLDS_DIR/bootstrap.yaml" -o "$USER_CLUSTER_DIR/bootstrap/bootstrap.yaml"
+  mkdir -p "$USER_CLUSTER_DIR/cluster/bootstrap"
+  skaffold render --namespace $GIT_USER -f "$SKAFFOLDS_DIR/bootstrap.yaml" -o "$USER_CLUSTER_DIR/cluster/bootstrap/bootstrap.yaml"
 
-  just argoapp "${GIT_USER}-vcluster" "$REPO_URL" "$USER_CLUSTER_DIR" "in-cluster" "default" "argo-apps/${GIT_USER}-vcluster.yaml"
+  just argoapp "${GIT_USER}-vcluster" "$REPO_URL" "$USER_CLUSTER_DIR/cluster" "in-cluster" "default" "argo-apps/${GIT_USER}-vcluster.yaml"
 
+  mkdir -p "$USER_CLUSTER_DIR/tools"
+  just argoapp "${GIT_USER}-vcluster-tools" "$REPO_URL" "$USER_CLUSTER_DIR" "$GIT_USER" "default" "argo-apps/${GIT_USER}-vcluster-tools.yaml"
+  exit 0
+
+  
   echo "Checking features to be installed..."
-  if [ ! -f .env ]; then
-    echo "Configuration file (.env) does not exist."
+  if [ ! -f features ]; then
+    echo "Features file (features) does not exist."
     echo "Load default configurations..."
   fi
-  cp .env.default .env && soruce .env
+  cp features.default features
+  while read -r feature; do
+    if [ "$feature" == "istio" ]; then
+      just argoapp "${GIT_USER}-istio" "$REPO_URL" "$USER_CLUSTER_DIR" "in-cluster" "default" "argo-apps/${GIT_USER}-istio.yaml"
+    fi
+  done < features
 
 
   exit 0
