@@ -43,19 +43,18 @@ apply:
 
   mkdir -p "$USER_CLUSTER_DIR/tools"
   just argoapp "${GIT_USER}-vcluster-tools" "$REPO_URL" "$USER_CLUSTER_DIR" "$GIT_USER" "default" "argo-apps/${GIT_USER}-vcluster-tools.yaml"
-  exit 0
 
-  
   echo "Checking features to be installed..."
   if [ ! -f features ]; then
     echo "Features file (features) does not exist."
     echo "Load default configurations..."
+    cp features.default features
   fi
-  cp features.default features
+  
+
   while read -r feature; do
-    if [ "$feature" == "istio" ]; then
-      just argoapp "${GIT_USER}-istio" "$REPO_URL" "$USER_CLUSTER_DIR" "in-cluster" "default" "argo-apps/${GIT_USER}-istio.yaml"
-    fi
+    echo "Rendering manifest for feature: '$feature'..."
+    just render-feature "$feature" "$USER_CLUSTER_DIR/tools/$feature.yaml"
   done < features
 
 
@@ -139,3 +138,12 @@ enable-feature NAME:
 render-feature NAME OUTPUT:
   #!/usr/bin/env bash
   set -eu pipefail
+  skaffold render --offline=true -f "$SKAFFOLDS_DIR/${NAME}.yaml" -o $OUTPUT
+
+test:
+  #!/usr/bin/env bash
+  set -eux pipefail
+  cp features.default features
+  while read -r line; do
+    echo "$line"
+  done < features
