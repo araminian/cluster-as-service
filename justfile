@@ -97,3 +97,23 @@ kubeconfig:
     exit 1
   fi
  
+
+configure:
+  #!/usr/bin/env bash
+  set -eu pipefail
+  echo "Creating configration file (.env)..."
+  rm -rf .env
+  touch .env
+  
+  just enable-feature "Istio" "ISTIO_ENABLED"
+
+enable-feature NAME VARIABLE:
+  #!/usr/bin/env bash
+  set -eu pipefail
+  echo "Do you need $NAME in your cluster?(y/n)"
+  read -r feature
+  if [ "$feature" == "y" ]; then
+    echo "$VARIABLE=true" >> .env
+  else
+    echo "$VARIABLE=false" >> .env
+  fi
