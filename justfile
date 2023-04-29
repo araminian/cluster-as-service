@@ -41,6 +41,16 @@ apply:
 
   just argoapp "${GIT_USER}-vcluster" "$REPO_URL" "$USER_CLUSTER_DIR" "in-cluster" "default" "argo-apps/${GIT_USER}-vcluster.yaml"
 
+  echo "Checking features to be installed..."
+  if [ ! -f .env ]; then
+    echo "Configuration file (.env) does not exist."
+    echo "Load default configurations..."
+  fi
+  cp .env.default .env && soruce .env
+
+
+  exit 0
+
   echo "Committing changes..."
   git add .
   git commit -m "Add cluster for user: '$GIT_USER'"
@@ -101,19 +111,21 @@ kubeconfig:
 configure:
   #!/usr/bin/env bash
   set -eu pipefail
-  echo "Creating configration file (.env)..."
-  rm -rf .env
-  touch .env
+  echo "Creating configration file (features)..."
+  rm -rf features
+  touch features
   
-  just enable-feature "Istio" "ISTIO_ENABLED"
+  just enable-feature "istio"
 
-enable-feature NAME VARIABLE:
+enable-feature NAME:
   #!/usr/bin/env bash
   set -eu pipefail
-  echo "Do you need $NAME in your cluster?(y/n)"
+  echo "Do you need '$NAME' in your cluster?(y/n)"
   read -r feature
   if [ "$feature" == "y" ]; then
-    echo "$VARIABLE=true" >> .env
-  else
-    echo "$VARIABLE=false" >> .env
+    echo "$NAME" >> features
   fi
+
+render-feature NAME OUTPUT:
+  #!/usr/bin/env bash
+  set -eu pipefail

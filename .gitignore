@@ -1,5 +1,5 @@
 # ignore all kubeconfigs
 kubeconfig*
 
-# ignore .env
-.env
+# ignore features file
+features
