@@ -6,3 +6,5 @@ metadata:
     vcluster: enabled
   annotations:
     argocd.argoproj.io/sync-wave: "-10"
+    argocd.argoproj.io/hook: PreSync
+

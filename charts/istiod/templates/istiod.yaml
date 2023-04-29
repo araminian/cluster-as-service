@@ -5,6 +5,7 @@ metadata:
   name: istiod
   annotations:
     argocd.argoproj.io/sync-wave: "10"
+    argocd.argoproj.io/hook: PostSync
 spec:
   profile: default
   componenet:
