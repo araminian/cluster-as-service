@@ -57,9 +57,6 @@ apply:
     just render-feature "$feature" "$USER_CLUSTER_DIR/tools/$feature.yaml"
   done < features
 
-
-  exit 0
-
   echo "Committing changes..."
   git add .
   git commit -m "Add cluster for user: '$GIT_USER'"
