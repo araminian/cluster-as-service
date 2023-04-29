@@ -42,7 +42,7 @@ apply:
   just argoapp "${GIT_USER}-vcluster" "$REPO_URL" "$USER_CLUSTER_DIR/cluster" "in-cluster" "default" "argo-apps/${GIT_USER}-vcluster.yaml"
 
   mkdir -p "$USER_CLUSTER_DIR/tools"
-  just argoapp "${GIT_USER}-vcluster-tools" "$REPO_URL" "$USER_CLUSTER_DIR" "$GIT_USER" "default" "argo-apps/${GIT_USER}-vcluster-tools.yaml"
+  just argoapp "${GIT_USER}-vcluster-tools" "$REPO_URL" "$USER_CLUSTER_DIR/tools" "$GIT_USER" "default" "argo-apps/${GIT_USER}-vcluster-tools.yaml"
 
   echo "Checking features to be installed..."
   if [ ! -f features ]; then
@@ -95,6 +95,7 @@ destroy:
   
   rm -rf "$USER_CLUSTER_DIR"
   rm -rf "argo-apps/${GIT_USER}-vcluster.yaml"
+  rm -rf "argo-apps/${GIT_USER}-vcluster-tools.yaml"
   echo "Committing changes..."
   git add .
   git commit -m "Delete cluster for user: '$GIT_USER'"
