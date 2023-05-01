@@ -1,0 +1,19 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: exposed
+spec:
+  gateways:
+    - istio-system/internal
+  hosts:
+    - "*"
+  http:
+    - match:
+        - authority:
+            prefix: "araminian-nginx"
+          port: 80
+      route:
+        - destination:
+            host: nginx-service
+            port:
+              number: 80
