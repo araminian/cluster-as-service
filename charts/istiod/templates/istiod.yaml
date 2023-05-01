@@ -8,7 +8,7 @@ metadata:
     argocd.argoproj.io/hook: PostSync
 spec:
   profile: default
-  componenet:
+  components:
     ingressGateways:
       - name: istio-ingressgateway
         enabled: true
