@@ -18,3 +18,12 @@ spec:
             host: customer-ingress.{{ .Values.user }}.svc.cluster.local
             port:
               number: 80
+    - match:
+        - authority:
+            prefix: "{{ .Values.user }}"
+          port: 443
+      route:
+        - destination:
+            host: customer-ingress.{{ .Values.user }}.svc.cluster.local
+            port:
+              number: 80
