@@ -1,0 +1,4 @@
+apiVersion: v2
+name: knative
+type: application
+version: 0.1.0

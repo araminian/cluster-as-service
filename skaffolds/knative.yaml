@@ -1,0 +1,12 @@
+apiVersion: skaffold/v3
+metadata:
+  name: knative
+kind: Config
+manifests:
+  helm:
+    releases:
+      - name: '{{.GIT_USER}}'
+        chartPath: charts/knative
+        setValueTemplates:
+          user: '{{.GIT_USER}}'
+          ingress: '{{.INGRESS}}'
