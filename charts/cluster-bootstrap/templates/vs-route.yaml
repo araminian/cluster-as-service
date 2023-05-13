@@ -11,7 +11,7 @@ spec:
   http:
     - match:
         - authority:
-            prefix: "{{ .Values.user }}"
+            regex: ".*{{ .Values.user }}.*"
           port: 80
       route:
         - destination:
@@ -20,7 +20,7 @@ spec:
               number: 80
     - match:
         - authority:
-            prefix: "{{ .Values.user }}"
+            regex: ".*{{ .Values.user }}.*"
           port: 443
       route:
         - destination:
