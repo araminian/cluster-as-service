@@ -1,0 +1,152 @@
+---
+# Source: cluster-bootstrap/templates/namespace.yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: build
+  labels:
+    vcluster: enabled
+  annotations:
+    argocd.argoproj.io/sync-wave: "-10"
+---
+# Source: cluster-bootstrap/templates/kyverno.yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: vcluster-argocd-build
+  namespace: kyverno
+  annotations:
+    argocd.argoproj.io/sync-wave: "10"
+spec:
+  generateExistingOnPolicyUpdate: true
+  rules:
+    - name: argocd
+      match:
+        all:
+          - resources:
+              kinds:
+                - Secret
+              names:
+                - vc-build
+              namespaces:
+                - build
+      context:
+        - name: vcsecrets
+          apiCall:
+            urlPath: /api/v1/namespaces/{{request.object.metadata.namespace}}/secrets/{{request.object.metadata.name}}
+            jmesPath: "data"
+        - name: ca
+          variable:
+            value: '{{vcsecrets."certificate-authority"}}'
+        - name: clientcert
+          variable:
+            value: '{{vcsecrets."client-certificate"}}'
+        - name: clientkey
+          variable:
+            value: '{{vcsecrets."client-key"}}'
+        - name: config
+          variable:
+            value: '{{vcsecrets."config"}}'
+        - name: argoconfig
+          variable:
+            jmesPath: 'to_string(@) | base64_encode(@)'
+            value:
+              tlsClientConfig:
+                insecure: false
+                certData: '{{clientcert}}'
+                keyData: '{{clientkey}}'
+                caData: '{{ca}}'
+        - name: argoclustername
+          variable:
+            jmesPath: 'to_string(@)'
+            value: '{{request.object.metadata.namespace}}'
+        - name: argoclusterurl
+          variable:
+            jmesPath: 'to_string(@)'
+            value: "https://cluster-build.ingress.cloudarmin.me"
+      generate:
+        kind: Secret
+        name: "{{request.object.metadata.namespace}}-cluster"
+        apiVersion: v1
+        namespace: argocd
+        synchronize: true
+        data:
+          metadata:
+            labels:
+              argocd.argoproj.io/secret-type: cluster
+          data:
+            config: "{{argoconfig}}"
+            name: "{{argoclustername | base64_encode(@)}}"
+            server: "{{argoclusterurl | base64_encode(@)}}"
+---
+# Source: cluster-bootstrap/templates/gateway.yaml
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: build-vcluster
+  namespace: istio-system
+spec:
+  selector:
+    istio: ingressgateway # use the default IngressGateway
+  servers:
+    - port:
+        number: 443
+        name: tls-passthrough
+        protocol: TLS
+      hosts:
+        - "cluster-build.ingress.cloudarmin.me"
+      tls:
+        mode: PASSTHROUGH
+---
+# Source: cluster-bootstrap/templates/cluster-ingress.yaml
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: vcluster-ingress
+  namespace: build
+spec:
+  gateways:
+    - istio-system/build-vcluster
+  hosts:
+    - "cluster-build.ingress.cloudarmin.me"
+  tls:
+    - match:
+        - port: 443
+          sniHosts:
+            - "cluster-build.ingress.cloudarmin.me"
+      route:
+        - destination:
+            host: build
+            port:
+              number: 443
+---
+# Source: cluster-bootstrap/templates/vs-route.yaml
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: exposed
+  namespace: build
+spec:
+  gateways:
+    - istio-system/internal
+  hosts:
+    - "*"
+  http:
+    - match:
+        - authority:
+            regex: ".*build.*"
+          port: 80
+      route:
+        - destination:
+            host: customer-ingress.build.svc.cluster.local
+            port:
+              number: 80
+    - match:
+        - authority:
+            regex: ".*build.*"
+          port: 443
+      route:
+        - destination:
+            host: customer-ingress.build.svc.cluster.local
+            port:
+              number: 80
