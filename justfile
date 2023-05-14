@@ -7,9 +7,10 @@ SKAFFOLDS_DIR := "skaffolds"
 CLUSTERS_DIR := "clusters"
 
 #VARS
-GIT_USER := `git config --get user.name`
-INGRESS := "ingress.cloudarmin.me"
-REPO_URL := "https://github.com/araminian/cluster-as-service.git"
+REAL_GIT_USER := `git config --get user.name`
+GIT_USER := env_var_or_default('CLUSTER_NAME',REAL_GIT_USER)
+INGRESS := env_var_or_default('CLUSTER_INGRESS',"ingress.cloudarmin.me")
+REPO_URL := env_var_or_default('GITOPS_REPO',"https://github.com/araminian/cluster-as-service.git")
 
 
 apply:
