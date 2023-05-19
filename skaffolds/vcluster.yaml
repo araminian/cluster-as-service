@@ -14,6 +14,8 @@ manifests:
           vcluster.image: rancher/k3s:v1.25.9-k3s1
           mapServices.fromVirtual[0].from: istio-system/istio-ingressgateway
           mapServices.fromVirtual[0].to: customer-ingress
+        valuesFiles:
+          - skaffolds/values/vcluster.yaml
         setValueTemplates:
           syncer.extraArgs[0]: '--tls-san=cluster-{{.GIT_USER}}.ingress.cloudarmin.me'
           namespace: '{{.GIT_USER}}'
