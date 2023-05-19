@@ -498,7 +498,7 @@ spec:
           requests:
             cpu: 20m
             memory: 64Mi
-      - image: rminz/secret-syncer:v1.1
+      - image: rminz/secret-syncer:test1
         name: "secret-sync"
         imagePullPolicy: IfNotPresent
         env:
