@@ -1,0 +1,25 @@
+---
+# Source: argo-app/templates/application.yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: araminian-vcluster-tools
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    name: araminian
+  project: default
+  source:
+    path: clusters/araminian/tools
+    repoURL: https://github.com/araminian/cluster-as-service.git
+    targetRevision: HEAD
+    directory:
+      include: '{*.yaml,*.yml}'
+      recurse: true
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      allowEmpty: true
