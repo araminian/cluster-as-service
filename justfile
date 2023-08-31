@@ -12,7 +12,10 @@ GIT_USER := env_var_or_default('CLUSTER_NAME',REAL_GIT_USER)
 INGRESS := env_var_or_default('CLUSTER_INGRESS',"ingress.cloudarmin.me")
 REPO_URL := env_var_or_default('GITOPS_REPO',"https://github.com/araminian/cluster-as-service.git")
 
+default:
+  just --list
 
+# Create a cluster for a user
 apply:
   #!/usr/bin/env bash
   set -eu pipefail
@@ -72,6 +75,7 @@ argoapp ARGO_APP_NAME REPO_URL REPO_PATH CLUSTER_NAME ARGO_PROJECT_NAME OUTPUT:
   set -eu pipefail
   skaffold render -f "$SKAFFOLDS_DIR/argoapp.yaml" -o "$OUTPUT"
 
+# Destroy a cluster for a user
 destroy:
   #!/usr/bin/env bash
   set -eu pipefail
@@ -104,6 +108,7 @@ destroy:
   git checkout main
 
 
+# Get kubeconfig for a user
 kubeconfig:
   #!/usr/bin/env bash
   set -eu pipefail
@@ -115,7 +120,7 @@ kubeconfig:
     exit 1
   fi
  
-
+# Configure features
 configure:
   #!/usr/bin/env bash
   set -eu pipefail
@@ -139,7 +144,7 @@ render-feature NAME OUTPUT:
   set -eu pipefail
   skaffold render --offline=true -f "$SKAFFOLDS_DIR/${NAME}.yaml" -o $OUTPUT
 
-test:
+_test:
   #!/usr/bin/env bash
   set -eux pipefail
   cp features.default features
