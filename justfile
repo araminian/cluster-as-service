@@ -129,6 +129,7 @@ configure:
   touch features
   
   just enable-feature "istio"
+  just enable-feature "knative"
 
 enable-feature NAME:
   #!/usr/bin/env bash
