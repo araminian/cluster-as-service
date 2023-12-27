@@ -128,8 +128,13 @@ configure:
   rm -rf features
   touch features
   
-  just enable-feature "istio"
-  just enable-feature "knative"
+  features=(
+    "istio"
+    "knative"
+  )
+  for feature in "${features[@]}"; do
+    just enable-feature "$feature"
+  done
 
 enable-feature NAME:
   #!/usr/bin/env bash
