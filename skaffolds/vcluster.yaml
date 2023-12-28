@@ -17,5 +17,5 @@ manifests:
         valuesFiles:
           - skaffolds/values/vcluster.yaml
         setValueTemplates:
-          syncer.extraArgs[0]: '--tls-san=cluster-{{.GIT_USER}}.ingress.cloudarmin.me'
+          syncer.extraArgs[0]: '--tls-san=cluster-{{.GIT_USER}}.{{.INGRESS}}'
           namespace: '{{.GIT_USER}}'
